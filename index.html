@@ -7,45 +7,45 @@
   <style>
     :root{--bg:#ffffff;--muted:#6b7280;--accent:#0b74de;--border:#e5e7eb;--card:#f9fafb}
     body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:var(--bg); color:#0f172a; margin:18px}
-    .container{max-width:900px;margin:0 auto}
+    .container{max-width:900px;margin:0 auto;display:none;}
     header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
     h1{font-size:18px;margin:0}
-    .meta small{color:var(--muted)}
+    .small{font-size:13px;color:var(--muted)}
     .card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:14px;box-shadow:0 1px 0 rgba(15,23,42,0.02)}
-    label{font-size:13px;color:#0f172a}
-    input[type="text"], input[type="date"], input[type="time"], input[type="number"], select, textarea{width:100%;padding:8px;border:1px solid var(--border);border-radius:6px;font-size:14px}
+    input, select, textarea{width:100%;padding:8px;border:1px solid var(--border);border-radius:6px;font-size:14px}
     textarea{min-height:70px}
     .grid{display:grid;grid-template-columns:1fr 220px;gap:12px}
-    .row{display:flex;gap:8px}
-    .col{flex:1}
-    .small{font-size:13px;color:var(--muted)}
     .toolbar{display:flex;gap:8px;justify-content:flex-end;margin-bottom:10px}
     .btn{background:var(--accent);color:#fff;border:none;padding:8px 12px;border-radius:6px;cursor:pointer}
     .btn.secondary{background:#eef2ff;color:#0b3a80}
     .btn.ghost{background:transparent;border:1px solid var(--border);color:#0f172a}
-
-    /* fuel gauge */
     .gauge{width:220px;height:120px;display:flex;align-items:center;justify-content:center}
-    svg .needle{transform-origin:50% 88%;transition:transform 450ms cubic-bezier(.2,.9,.3,1)}
+    svg .needle{transform-origin:50% 88%;transition:transform 1s ease-in-out}
     .gauge-legend{font-size:12px;color:var(--muted);text-align:center;margin-top:6px}
 
-    .field-row{display:flex;gap:8px}
-    .field-row > *{flex:1}
-    .signature{margin-top:10px;font-size:14px}
-
-    @media(max-width:760px){.grid{grid-template-columns:1fr}
-      .gauge{width:160px;height:90px}}
+    /* login */
+    #loginBox{display:flex;flex-direction:column;align-items:center;justify-content:center;height:90vh;text-align:center}
+    #loginBox input{width:200px;margin:6px 0}
+    #loginBox button{margin-top:8px;background:var(--accent);color:#fff;border:none;padding:8px 14px;border-radius:6px;cursor:pointer}
   </style>
 </head>
 <body>
-  <div class="container">
+  <!-- login -->
+  <div id="loginBox">
+    <h2>Acceso restringido</h2>
+    <p class="small">Ingrese usuario y contraseña</p>
+    <input type="text" id="user" placeholder="Usuario">
+    <input type="password" id="pass" placeholder="Contraseña">
+    <button id="loginBtn">Ingresar</button>
+    <p id="msg" class="small" style="color:#c53030;margin-top:8px"></p>
+  </div>
+
+  <!-- contenido principal -->
+  <div class="container" id="main">
     <header>
       <div>
         <h1>Planilla Control Diario Vehicular</h1>
         <div class="small">Completar y presionar "Agregar otro" si necesitás más registros</div>
-      </div>
-      <div style="text-align:right">
-        <img src="" alt="logo" style="height:48px;opacity:.9">
       </div>
     </header>
 
@@ -56,12 +56,11 @@
     </div>
 
     <form id="forms">
-      <!-- plantilla clonable -->
       <template id="tpl">
         <section class="card record">
           <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start">
             <div style="flex:1">
-              <div class="field-row">
+              <div class="grid">
                 <div>
                   <label>Fecha</label>
                   <input type="date" name="fecha">
@@ -73,34 +72,30 @@
               </div>
 
               <div style="margin-top:8px">
-                <label class="small">Limpieza</label>
-                <div class="row" style="margin-top:6px">
-                  <label style="display:flex;align-items:center;gap:6px"><input type="radio" name="limpieza"> Sí</label>
-                  <label style="display:flex;align-items:center;gap:6px"><input type="radio" name="limpieza"> No</label>
+                <label>Limpieza</label><br>
+                <label><input type="radio" name="limpieza"> Sí</label>
+                <label><input type="radio" name="limpieza"> No</label>
+              </div>
+
+              <div style="margin-top:8px" class="grid">
+                <div>
+                  <label>Aceite</label>
+                  <select name="aceite"><option>OK</option><option>Revisar</option></select>
+                </div>
+                <div>
+                  <label>Agua</label>
+                  <select name="agua"><option>OK</option><option>Revisar</option></select>
                 </div>
               </div>
 
-              <div style="margin-top:8px;">
-                <div class="field-row">
-                  <div>
-                    <label>Aceite</label>
-                    <select name="aceite"><option>OK</option><option>Revisar</option></select>
-                  </div>
-                  <div>
-                    <label>Agua</label>
-                    <select name="agua"><option>OK</option><option>Revisar</option></select>
-                  </div>
-                </div>
-              </div>
-
-              <div style="margin-top:8px" class="field-row">
+              <div style="margin-top:8px" class="grid">
                 <div>
                   <label>Km recibido</label>
-                  <input type="number" name="km_recibido" placeholder="km">
+                  <input type="number" name="km_recibido">
                 </div>
                 <div>
                   <label>Km entrega</label>
-                  <input type="number" name="km_entrega" placeholder="km">
+                  <input type="number" name="km_entrega">
                 </div>
               </div>
 
@@ -109,33 +104,16 @@
                 <textarea name="novedades"></textarea>
               </div>
 
-              <div class="signature">Firma Chofer: ________________________</div>
+              <div class="small" style="margin-top:8px">Firma Chofer: ________________________</div>
             </div>
 
             <div style="width:240px;text-align:center">
-              <!-- gauge -->
-              <div class="gauge" aria-hidden="true">
+              <div class="gauge">
                 <svg viewBox="0 0 200 110" width="200" height="110">
-                  <!-- semicircle ticks -->
-                  <defs>
-                    <linearGradient id="g1" x1="0" x2="0" y1="0" y2="1">
-                      <stop offset="0%" stop-color="#fff" stop-opacity="1" />
-                      <stop offset="100%" stop-color="#f3f4f6" stop-opacity="1" />
-                    </linearGradient>
-                  </defs>
-
                   <path d="M10,100 A90,90 0 0,1 190,100" fill="none" stroke="#e6edf5" stroke-width="18" stroke-linecap="round"/>
                   <path d="M20,100 A80,80 0 0,1 180,100" fill="none" stroke="#dbe7fb" stroke-width="10" stroke-linecap="round"/>
-
-                  <!-- ticks -->
-                  <g stroke="#9aa7bf" stroke-width="2">
-                    <!-- generate 13 ticks via JS for spacing; static ones for fallback -->
-                  </g>
-
-                  <!-- needle -->
+                  <g stroke="#9aa7bf" stroke-width="2"></g>
                   <line class="needle" x1="100" y1="100" x2="100" y2="24" stroke="#c53030" stroke-width="3" stroke-linecap="round" transform="rotate(-40 100 100)" />
-
-                  <!-- center cap -->
                   <circle cx="100" cy="100" r="5" fill="#0f172a" />
                 </svg>
               </div>
@@ -147,34 +125,39 @@
               </div>
             </div>
           </div>
-
-          <div style="display:flex;justify-content:flex-end;margin-top:8px;gap:8px">
+          <div style="text-align:right;margin-top:8px">
             <button type="button" class="btn ghost remove">Eliminar</button>
           </div>
         </section>
       </template>
 
-      <!-- primer registro inicial -->
       <div id="list"></div>
     </form>
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script>
-    // helpers
+    // login simple
+    document.getElementById('loginBtn').addEventListener('click', function(){
+      const user = document.getElementById('user').value.trim();
+      const pass = document.getElementById('pass').value.trim();
+      if(user === 'admin' && pass === '1234'){
+        document.getElementById('loginBox').style.display = 'none';
+        document.querySelector('.container').style.display = 'block';
+      } else {
+        document.getElementById('msg').textContent = 'Credenciales incorrectas';
+      }
+    });
+
     function makeTicks(svg){
-      // add ticks along semicircle
       var g = document.createElementNS('http://www.w3.org/2000/svg','g');
       g.setAttribute('stroke','#9aa7bf'); g.setAttribute('stroke-width','2');
       for(var i=0;i<=12;i++){
-        var a = -90 + (i/12)*180; // -90..90
-        var rOut = 80; var rIn = (i%3===0)?60:68;
-        var x1 = 100 + rOut*Math.cos(a*Math.PI/180);
-        var y1 = 100 + rOut*Math.sin(a*Math.PI/180);
-        var x2 = 100 + rIn*Math.cos(a*Math.PI/180);
-        var y2 = 100 + rIn*Math.sin(a*Math.PI/180);
-        var line = document.createElementNS('http://www.w3.org/2000/svg','line');
-        line.setAttribute('x1',x1); line.setAttribute('y1',y1); line.setAttribute('x2',x2); line.setAttribute('y2',y2);
+        var a=-90+(i/12)*180,rOut=80,rIn=(i%3===0)?60:68;
+        var x1=100+rOut*Math.cos(a*Math.PI/180),y1=100+rOut*Math.sin(a*Math.PI/180);
+        var x2=100+rIn*Math.cos(a*Math.PI/180),y2=100+rIn*Math.sin(a*Math.PI/180);
+        var line=document.createElementNS('http://www.w3.org/2000/svg','line');
+        line.setAttribute('x1',x1);line.setAttribute('y1',y1);line.setAttribute('x2',x2);line.setAttribute('y2',y2);
         g.appendChild(line);
       }
       svg.appendChild(g);
@@ -182,81 +165,43 @@
 
     function attachGauge(section){
       var svg = section.querySelector('svg');
-      // only once
       if(svg && !svg.dataset.ticks){ makeTicks(svg); svg.dataset.ticks = '1'; }
       var range = section.querySelector('.fuel-range');
       var needle = section.querySelector('.needle');
       function setVal(v){
-        var angle = -90 + (v/100)*180; // -90..90
+        var angle = -90 + (v/100)*180;
         needle.style.transform = 'rotate('+angle+'deg)';
       }
       range.addEventListener('input', function(){ setVal(this.value); });
-      // set initial
       setVal(range.value);
     }
 
-    // cloning & management
-    var tpl = document.getElementById('tpl');
-    var list = document.getElementById('list');
-    var counter = 0;
-    function addRecord(data){
+    var tpl=document.getElementById('tpl'),list=document.getElementById('list'),counter=0;
+    function addRecord(){
       counter++;
-      var node = tpl.content.cloneNode(true);
-      var sect = node.querySelector('.record');
-      // set unique names
-      sect.querySelectorAll('[name]').forEach(function(el){
-        var name = el.getAttribute('name');
-        if(name) el.setAttribute('name', name + '_' + counter);
+      var node=tpl.content.cloneNode(true);
+      var sect=node.querySelector('.record');
+      sect.querySelectorAll('[name]').forEach(el=>{
+        var n=el.getAttribute('name');
+        el.setAttribute('name', n+'_'+counter);
       });
-
       list.appendChild(node);
-      var last = list.lastElementChild;
+      var last=list.lastElementChild;
       attachGauge(last);
-      // hook remove
-      last.querySelector('.remove').addEventListener('click', function(){ last.remove(); });
+      last.querySelector('.remove').addEventListener('click',()=>last.remove());
       return last;
     }
 
-    // initial
-    document.getElementById('addBtn').addEventListener('click', function(){ addRecord(); });
-    // add first automatically
+    document.getElementById('addBtn').addEventListener('click',()=>addRecord());
     addRecord();
+    document.getElementById('resetBtn').addEventListener('click',()=>{list.innerHTML='';counter=0;addRecord();});
 
-    // reset removes all and adds one
-    document.getElementById('resetBtn').addEventListener('click', function(){ list.innerHTML=''; counter=0; addRecord(); });
-
-    // export pdf
-    document.getElementById('exportPdf').addEventListener('click', function(){
-      var opt = {
-        margin: 0.4,
-        filename: 'planilla_control_vehicular.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-      };
-      // hide buttons while rendering
-      document.querySelector('.toolbar').style.visibility = 'hidden';
-      html2pdf().set(opt).from(document.querySelector('.container')).save().then(function(){ document.querySelector('.toolbar').style.visibility = 'visible'; });
+    document.getElementById('exportPdf').addEventListener('click',function(){
+      var opt={margin:0.4,filename:'planilla_control_vehicular.pdf',image:{type:'jpeg',quality:0.98},
+        html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'in',format:'a4',orientation:'portrait'}};
+      document.querySelector('.toolbar').style.visibility='hidden';
+      html2pdf().set(opt).from(document.querySelector('.container')).save().then(()=>{document.querySelector('.toolbar').style.visibility='visible';});
     });
-
-    // enhance keyboard: Enter in last field adds new record
-    document.addEventListener('keydown', function(e){
-      if(e.key === 'Enter' && (e.target.tagName==='INPUT' || e.target.tagName==='TEXTAREA')){
-        // allow normal enter in textarea
-        if(e.target.tagName==='TEXTAREA') return;
-        // if focused on last record's last input, add
-        var records = document.querySelectorAll('.record');
-        var last = records[records.length-1];
-        if(last && last.contains(e.target)){
-          // if target is one of the last row elements, add
-          var inputs = Array.from(last.querySelectorAll('input, textarea, select'));
-          if(inputs.indexOf(e.target) === inputs.length-1){ addRecord(); }
-        }
-      }
-    });
-
-    // accessibility: ensure needle transforms are applied inline for older browsers
-    // already handled by style.transform on element
   </script>
 </body>
 </html>
