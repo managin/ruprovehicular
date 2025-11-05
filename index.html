@@ -1,138 +1,368 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Panel Control</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Planilla Control Diario Vehicular</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      background-color: #111;
-      color: #fff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      transition: background-color 0.5s ease;
-    }
-    #login, #panel {
-      background: #222;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.6);
-      text-align: center;
-      width: 300px;
-    }
-    input {
-      display: block;
-      margin: 10px auto;
-      padding: 8px;
-      width: 90%;
-      border: none;
-      border-radius: 6px;
-      text-align: center;
-    }
-    button {
-      padding: 8px 20px;
-      background: #4caf50;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      color: white;
-      transition: background 0.3s;
-    }
-    button:hover { background: #45a049; }
+    :root{--bg:#ffffff;--muted:#6b7280;--accent:#0b74de;--border:#e5e7eb;--card:#f9fafb}
+    body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:var(--bg); color:#0f172a; margin:18px}
+    .container{max-width:900px;margin:0 auto;display:none}
+    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+    h1{font-size:18px;margin:0}
+    .small{font-size:13px;color:var(--muted)}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:14px;box-shadow:0 1px 0 rgba(15,23,42,0.02)}
+    label{font-size:13px;color:#0f172a}
+    input[type="text"], input[type="date"], input[type="time"], input[type="number"], select, textarea{width:100%;padding:8px;border:1px solid var(--border);border-radius:6px;font-size:14px}
+    textarea{min-height:70px}
+    .grid{display:grid;grid-template-columns:1fr 220px;gap:12px}
+    .row{display:flex;gap:8px}
+    .col{flex:1}
+    .toolbar{display:flex;gap:8px;justify-content:flex-end;margin-bottom:10px}
+    .btn{background:var(--accent);color:#fff;border:none;padding:8px 12px;border-radius:6px;cursor:pointer}
+    .btn.secondary{background:#eef2ff;color:#0b3a80}
+    .btn.ghost{background:transparent;border:1px solid var(--border);color:#0f172a}
 
-    .gauge {
-      position: relative;
-      width: 200px;
-      height: 100px;
-      background: #333;
-      border-top-left-radius: 200px;
-      border-top-right-radius: 200px;
-      overflow: hidden;
-      margin: 20px auto;
-    }
-    .needle {
-      position: absolute;
-      bottom: 0;
-      left: 50%;
-      width: 4px;
-      height: 100px;
-      background: red;
-      transform-origin: bottom center;
-      transform: rotate(-90deg);
-      transition: transform 1.5s ease-in-out;
-    }
-    .center {
-      position: absolute;
-      bottom: 0;
-      left: 50%;
-      width: 12px;
-      height: 12px;
-      background: #000;
-      border-radius: 50%;
-      transform: translateX(-50%);
-    }
-    .label {
-      text-align: center;
-      margin-top: 10px;
-    }
-    .input-row {
-      display: flex;
-      justify-content: center;
-      gap: 5px;
-      margin-top: 15px;
-    }
-    .input-row input {
-      width: 60px;
-    }
+    /* fuel gauge */
+    .gauge{width:220px;height:120px;display:flex;align-items:center;justify-content:center;position:relative}
+    svg .needle{transform-origin:50% 88%;transition:transform 1s ease-in-out}
+    .gauge-legend{font-size:12px;color:var(--muted);text-align:center;margin-top:6px}
+
+    /* percentage text overlay inside gauge */
+    .gauge .pct-text{position:absolute; left:50%; top:44%; transform:translate(-50%,-50%); font-weight:600; font-size:14px; pointer-events:none}
+
+    .field-row{display:flex;gap:8px}
+    .field-row > *{flex:1}
+    .signature{margin-top:10px;font-size:14px}
+
+    /* layout for range + number input */
+    .fuel-controls { display:flex; gap:8px; align-items:center; margin-top:6px }
+    .fuel-controls input[type="range"]{flex:1}
+    .fuel-controls input[type="number"]{width:64px; padding:6px}
+
+    /* login */
+    #loginBox{display:flex;flex-direction:column;align-items:center;justify-content:center;height:90vh;text-align:center}
+    #loginBox input{width:200px;margin:6px 0;padding:8px;border:1px solid var(--border);border-radius:6px}
+    #loginBox button{margin-top:8px;background:var(--accent);color:#fff;border:none;padding:8px 14px;border-radius:6px;cursor:pointer}
+
+    @media(max-width:760px){.grid{grid-template-columns:1fr}.gauge{width:160px;height:90px}}
   </style>
 </head>
 <body>
-  <div id="login">
-    <h2>Acceso</h2>
-    <input type="text" id="user" placeholder="Usuario">
-    <input type="password" id="pass" placeholder="Contraseña">
-    <button onclick="login()">Entrar</button>
+  <!-- login -->
+  <div id="loginBox">
+    <h2>Acceso restringido</h2>
+    <p class="small">Ingrese usuario y contraseña</p>
+    <input type="text" id="user" placeholder="Usuario" autocomplete="username">
+    <input type="password" id="pass" placeholder="Contraseña" autocomplete="current-password">
+    <button id="loginBtn">Ingresar</button>
+    <p id="msg" class="small" style="color:#c53030;margin-top:8px"></p>
   </div>
 
-  <div id="panel" style="display:none;">
-    <h2>Panel de Control</h2>
-    <div class="gauge">
-      <div class="needle" id="needle"></div>
-      <div class="center"></div>
+  <!-- contenido principal -->
+  <div class="container" id="main">
+    <header>
+      <div>
+        <h1>Planilla Control Diario Vehicular</h1>
+        <div class="small">Completar y presionar "Agregar otro" si necesitás más registros</div>
+      </div>
+      <div style="text-align:right">
+        <img src="" alt="logo" style="height:48px;opacity:.9">
+      </div>
+    </header>
+
+    <div class="toolbar">
+      <button class="btn secondary" id="addBtn">Agregar otro</button>
+      <button class="btn ghost" id="resetBtn">Reset</button>
+      <button class="btn" id="exportPdf">Exportar PDF</button>
+      <button class="btn" id="exportCsv">Exportar CSV</button>
     </div>
-    <div class="label">Combustible: <span id="fuelValue">0%</span></div>
-    <div class="input-row">
-      <input type="number" id="fuelInput" placeholder="%" min="0" max="100">
-      <button onclick="setFuel()">OK</button>
-    </div>
+
+    <form id="forms" onsubmit="return false;">
+      <template id="tpl">
+        <section class="card record">
+          <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start">
+            <div style="flex:1">
+              <div class="field-row">
+                <div style="flex:1">
+                  <label>Fecha</label>
+                  <input type="date" name="fecha">
+                </div>
+                <div style="flex:1">
+                  <label>Patente</label>
+                  <input type="text" name="patente" placeholder="ABC123">
+                </div>
+              </div>
+
+              <div style="margin-top:8px">
+                <label class="small">Limpieza</label>
+                <div class="row" style="margin-top:6px">
+                  <label style="display:flex;align-items:center;gap:6px"><input type="radio" name="limpieza"> Sí</label>
+                  <label style="display:flex;align-items:center;gap:6px"><input type="radio" name="limpieza"> No</label>
+                </div>
+              </div>
+
+              <div style="margin-top:8px;">
+                <div class="field-row">
+                  <div>
+                    <label>Aceite</label>
+                    <select name="aceite"><option>OK</option><option>Revisar</option></select>
+                  </div>
+                  <div>
+                    <label>Agua</label>
+                    <select name="agua"><option>OK</option><option>Revisar</option></select>
+                  </div>
+                </div>
+              </div>
+
+              <div style="margin-top:8px" class="field-row">
+                <div>
+                  <label>Km recibido</label>
+                  <input type="number" name="km_recibido" placeholder="km">
+                </div>
+                <div>
+                  <label>Km entrega</label>
+                  <input type="number" name="km_entrega" placeholder="km">
+                </div>
+              </div>
+
+              <div style="margin-top:8px">
+                <label>Novedades</label>
+                <textarea name="novedades"></textarea>
+              </div>
+
+              <div class="signature">Firma Chofer: ________________________</div>
+            </div>
+
+            <div style="width:240px;text-align:center">
+              <!-- gauge -->
+              <div class="gauge" aria-hidden="true">
+                <svg viewBox="0 0 200 110" width="200" height="110" class="gauge-svg">
+                  <defs>
+                    <linearGradient id="g1" x1="0" x2="0" y1="0" y2="1">
+                      <stop offset="0%" stop-color="#fff" stop-opacity="1" />
+                      <stop offset="100%" stop-color="#f3f4f6" stop-opacity="1" />
+                    </linearGradient>
+                  </defs>
+
+                  <path d="M10,100 A90,90 0 0,1 190,100" fill="none" stroke="#e6edf5" stroke-width="18" stroke-linecap="round"/>
+                  <path d="M20,100 A80,80 0 0,1 180,100" fill="none" stroke="#dbe7fb" stroke-width="10" stroke-linecap="round"/>
+
+                  <!-- ticks placeholder; filled by JS -->
+                  <g stroke="#9aa7bf" stroke-width="2"></g>
+
+                  <!-- needle -->
+                  <line class="needle" x1="100" y1="100" x2="100" y2="24" stroke="#c53030" stroke-width="3" stroke-linecap="round" transform="rotate(-40 100 100)" />
+
+                  <!-- center cap -->
+                  <circle cx="100" cy="100" r="5" fill="#0f172a" />
+                </svg>
+
+                <!-- percentage displayed over the gauge (centered) -->
+                <div class="pct-text">50%</div>
+              </div>
+
+              <div style="margin-top:6px; text-align:left;">
+                <label class="small">Nivel combustible</label>
+                <div class="fuel-controls">
+                  <input type="range" min="0" max="100" value="50" class="fuel-range">
+                  <input type="number" min="0" max="100" value="50" class="fuel-number">
+                </div>
+                <div class="gauge-legend"><span>E</span><span style="float:right">F</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex;justify-content:flex-end;margin-top:8px;gap:8px">
+            <button type="button" class="btn ghost remove">Eliminar</button>
+          </div>
+        </section>
+      </template>
+
+      <!-- primer registro inicial -->
+      <div id="list"></div>
+    </form>
   </div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script>
-    const USERS = { "admin": "1234", "gino": "4567" };
-
-    function login() {
-      const u = document.getElementById('user').value;
-      const p = document.getElementById('pass').value;
-      if (USERS[u] === p) {
-        document.getElementById('login').style.display = 'none';
-        document.getElementById('panel').style.display = 'block';
+    // --- login simple ---
+    document.getElementById('loginBtn').addEventListener('click', function(){
+      const user = document.getElementById('user').value.trim();
+      const pass = document.getElementById('pass').value.trim();
+      if(user === 'admin' && pass === '1234'){
+        document.getElementById('loginBox').style.display = 'none';
+        document.getElementById('main').style.display = 'block';
       } else {
-        alert('Usuario o contraseña incorrectos');
+        document.getElementById('msg').textContent = 'Credenciales incorrectas';
       }
+    });
+
+    // --- gauge helpers ---
+    function makeTicks(svg){
+      // add ticks along semicircle
+      var g = document.createElementNS('http://www.w3.org/2000/svg','g');
+      g.setAttribute('stroke','#9aa7bf'); g.setAttribute('stroke-width','2');
+      for(var i=0;i<=12;i++){
+        var a = -90 + (i/12)*180; // -90..90
+        var rOut = 80; var rIn = (i%3===0)?60:68;
+        var x1 = 100 + rOut*Math.cos(a*Math.PI/180);
+        var y1 = 100 + rOut*Math.sin(a*Math.PI/180);
+        var x2 = 100 + rIn*Math.cos(a*Math.PI/180);
+        var y2 = 100 + rIn*Math.sin(a*Math.PI/180);
+        var line = document.createElementNS('http://www.w3.org/2000/svg','line');
+        line.setAttribute('x1',x1); line.setAttribute('y1',y1); line.setAttribute('x2',x2); line.setAttribute('y2',y2);
+        g.appendChild(line);
+      }
+      svg.querySelector('g').appendChild(g);
     }
 
-    function setFuel() {
-      const val = parseInt(document.getElementById('fuelInput').value);
-      if (isNaN(val) || val < 0 || val > 100) return alert("Ingrese un valor 0-100");
-      const needle = document.getElementById('needle');
-      const angle = -90 + (val * 180 / 100);
-      needle.style.transform = `rotate(${angle}deg)`;
-      document.getElementById('fuelValue').textContent = val + '%';
+    function attachGauge(section){
+      var svg = section.querySelector('svg.gauge-svg');
+      if(svg && !svg.dataset.ticks){ makeTicks(svg); svg.dataset.ticks = '1'; }
+      var range = section.querySelector('.fuel-range');
+      var number = section.querySelector('.fuel-number');
+      var needle = section.querySelector('.needle');
+      var pctText = section.querySelector('.pct-text');
+
+      function setVal(v){
+        v = Number(v);
+        if(isNaN(v)) v = 0;
+        if(v < 0) v = 0;
+        if(v > 100) v = 100;
+        var angle = -90 + (v/100)*180; // -90..90
+        needle.style.transform = 'rotate(' + angle + 'deg)';
+        // update text over gauge
+        pctText.textContent = v + '%';
+        // sync inputs if needed
+        if(range.value != v) range.value = v;
+        if(number.value != v) number.value = v;
+      }
+
+      // slider -> set
+      range.addEventListener('input', function(){ setVal(this.value); });
+      // number -> set (typing)
+      number.addEventListener('input', function(){
+        var val = parseInt(this.value);
+        if(isNaN(val)) return;
+        if(val < 0) val = 0;
+        if(val > 100) val = 100;
+        setVal(val);
+      });
+
+      // initialize from current value
+      setVal(range.value);
     }
+
+    // --- cloning & management ---
+    var tpl = document.getElementById('tpl');
+    var list = document.getElementById('list');
+    var counter = 0;
+    function addRecord(){
+      counter++;
+      var node = tpl.content.cloneNode(true);
+      var sect = node.querySelector('.record');
+
+      // set unique names for form fields to avoid collisions
+      sect.querySelectorAll('[name]').forEach(function(el){
+        var name = el.getAttribute('name');
+        if(name){
+          el.setAttribute('name', name + '_' + counter);
+        }
+      });
+
+      list.appendChild(node);
+      var last = list.lastElementChild;
+      attachGauge(last);
+
+      // hook remove button
+      last.querySelector('.remove').addEventListener('click', function(){ last.remove(); });
+      return last;
+    }
+
+    // initial
+    document.getElementById('addBtn').addEventListener('click', function(){ addRecord(); });
+    addRecord();
+
+    // reset removes all and adds one
+    document.getElementById('resetBtn').addEventListener('click', function(){ list.innerHTML=''; counter=0; addRecord(); });
+
+    // export pdf
+    document.getElementById('exportPdf').addEventListener('click', function(){
+      var opt = {
+        margin: 0.4,
+        filename: 'planilla_' + new Date().toISOString().slice(0,10) + '.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+      };
+      document.querySelector('.toolbar').style.visibility = 'hidden';
+      html2pdf().set(opt).from(document.querySelector('.container')).save().then(function(){ document.querySelector('.toolbar').style.visibility = 'visible'; });
+    });
+
+    // export CSV (one row por registro - estructura tipo DB)
+    document.getElementById('exportCsv').addEventListener('click', function(){
+      var rows = [];
+      // header
+      var header = ['fecha','patente','limpieza','aceite','agua','combustible_pct','km_recibido','km_entrega','novedades'];
+      rows.push(header.join(','));
+      // for each record
+      var records = document.querySelectorAll('.record');
+      records.forEach(function(rec){
+        var get = function(selector){ var el = rec.querySelector('[name^=\"'+selector+'\"]'); if(!el) return ''; if(el.type === 'radio'){ var r = rec.querySelector('input[name^=\"'+selector+'\"]:checked'); return r? r.value : ''; } return el.value ? ('\"'+String(el.value).replace(/\"/g,'\"\"')+'\"') : ''; };
+        // limpieza radio input names vary; we used name starting with limpieza_
+        // aceite_, agua_, fechas, patente_, km_recibido_, km_entrega_, novedades_
+        // combustible_pct from number input class fuel-number
+        var fecha = (rec.querySelector('[name^=\"fecha_\"]') || {}).value || '';
+        var patente = (rec.querySelector('[name^=\"patente_\"]') || {}).value || '';
+        var limpiezaChecked = '';
+        var radios = rec.querySelectorAll('input[type=\"radio\"][name^=\"limpieza_\"]');
+        if(radios && radios.length){
+          // pick checked
+          var found = Array.from(radios).find(r=>r.checked);
+          limpiezaChecked = found ? found.value : '';
+        }
+        var aceite = (rec.querySelector('[name^=\"aceite_\"]') || {}).value || '';
+        var agua = (rec.querySelector('[name^=\"agua_\"]') || {}).value || '';
+        var combustibleEl = rec.querySelector('.fuel-number');
+        var combustible = combustibleEl ? combustibleEl.value : '';
+        var km_recibido = (rec.querySelector('[name^=\"km_recibido_\"]') || {}).value || '';
+        var km_entrega = (rec.querySelector('[name^=\"km_entrega_\"]') || {}).value || '';
+        var novedades = (rec.querySelector('[name^=\"novedades_\"]') || {}).value || '';
+
+        var row = [
+          '\"'+fecha+'\"',
+          '\"'+patente.replace(/\"/g,'\"\"')+'\"',
+          '\"'+limpiezaChecked+'\"',
+          '\"'+aceite.replace(/\"/g,'\"\"')+'\"',
+          '\"'+agua.replace(/\"/g,'\"\"')+'\"',
+          '\"'+combustible+'\"',
+          '\"'+km_recibido+'\"',
+          '\"'+km_entrega+'\"',
+          '\"'+novedades.replace(/\"/g,'\"\"')+'\"'
+        ].join(',');
+        rows.push(row);
+      });
+
+      var csv = rows.join('\\n');
+      var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a'); a.href = url; a.download = 'planilla_' + new Date().toISOString().slice(0,10) + '.csv'; document.body.appendChild(a); a.click(); URL.revokeObjectURL(url); a.remove();
+    });
+
+    // keyboard helper: Enter in last field adds new record
+    document.addEventListener('keydown', function(e){
+      if(e.key === 'Enter' && (e.target.tagName==='INPUT' || e.target.tagName==='TEXTAREA')){
+        if(e.target.tagName==='TEXTAREA') return;
+        var records = document.querySelectorAll('.record');
+        var last = records[records.length-1];
+        if(last && last.contains(e.target)){
+          var inputs = Array.from(last.querySelectorAll('input, textarea, select'));
+          if(inputs.indexOf(e.target) === inputs.length-1){ addRecord(); }
+        }
+      }
+    });
+
   </script>
 </body>
 </html>
