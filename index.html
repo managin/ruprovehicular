@@ -1,740 +1,769 @@
 <!doctype html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Planilla Control Diario Vehicular</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <style>
-    :root{
-      --bg:#ffffff;
-      --muted:#6b7280;
-      --accent:#0b74de;
-      --border:#e5e7eb;
-      --card:#f9fafb;
-    }
+<title>Planilla Control Diario Vehicular</title>
 
-    body{
-      font-family:Inter, system-ui, sans-serif;
-      background:var(--bg);
-      color:#0f172a;
-      margin:18px;
-    }
+<style>
 
-    .container{
-      max-width:900px;
-      margin:0 auto;
-      display:none;
-    }
+:root{
+  --bg:#ffffff;
+  --muted:#6b7280;
+  --accent:#0b74de;
+  --border:#e5e7eb;
+  --card:#f9fafb;
+}
 
-    header{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      margin-bottom:12px;
-    }
+body{
+  font-family:Inter,system-ui,sans-serif;
+  background:var(--bg);
+  color:#0f172a;
+  margin:18px;
+}
 
-    h1{
-      font-size:18px;
-      margin:0;
-    }
+.container{
+  max-width:900px;
+  margin:0 auto;
+  display:none;
+}
 
-    .small{
-      font-size:13px;
-      color:var(--muted);
-    }
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:12px;
+}
 
-    .card{
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:8px;
-      padding:12px;
-      margin-bottom:14px;
-      box-shadow:0 1px 0 rgba(15,23,42,0.02);
-    }
+h1{
+  font-size:18px;
+  margin:0;
+}
 
-    label{
-      font-size:13px;
-      color:#0f172a;
-    }
+.small{
+  font-size:13px;
+  color:var(--muted);
+}
 
-    input[type="text"],
-    input[type="date"],
-    input[type="time"],
-    input[type="number"],
-    select,
-    textarea{
-      width:100%;
-      padding:8px;
-      border:1px solid var(--border);
-      border-radius:6px;
-      font-size:14px;
-      box-sizing:border-box;
-    }
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:12px;
+  margin-bottom:14px;
+  box-shadow:0 1px 0 rgba(15,23,42,0.02);
+}
 
-    textarea{
-      min-height:70px;
-    }
+label{
+  font-size:13px;
+}
 
-    .row{
-      display:flex;
-      gap:8px;
-    }
+input[type="text"],
+input[type="date"],
+input[type="time"],
+input[type="number"],
+select,
+textarea{
+  width:100%;
+  padding:8px;
+  border:1px solid var(--border);
+  border-radius:6px;
+  font-size:14px;
+  box-sizing:border-box;
+}
 
-    .field-row{
-      display:flex;
-      gap:8px;
-    }
+textarea{
+  min-height:70px;
+}
 
-    .field-row > *{
-      flex:1;
-    }
+.row{
+  display:flex;
+  gap:8px;
+}
 
-    .toolbar{
-      display:flex;
-      gap:8px;
-      justify-content:flex-end;
-      margin-bottom:10px;
-      flex-wrap:wrap;
-    }
+.field-row{
+  display:flex;
+  gap:8px;
+}
 
-    .btn{
-      background:var(--accent);
-      color:#fff;
-      border:none;
-      padding:8px 12px;
-      border-radius:6px;
-      cursor:pointer;
-    }
+.field-row > *{
+  flex:1;
+}
 
-    .btn.secondary{
-      background:#eef2ff;
-      color:#0b3a80;
-    }
+.toolbar{
+  display:flex;
+  gap:8px;
+  justify-content:flex-end;
+  margin-bottom:10px;
+  flex-wrap:wrap;
+}
 
-    .btn.ghost{
-      background:transparent;
-      border:1px solid var(--border);
-      color:#0f172a;
-    }
+.btn{
+  background:var(--accent);
+  color:#fff;
+  border:none;
+  padding:8px 12px;
+  border-radius:6px;
+  cursor:pointer;
+}
 
-    /* gauge */
+.btn.secondary{
+  background:#eef2ff;
+  color:#0b3a80;
+}
 
-    .gauge{
-      width:220px;
-      height:120px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      position:relative;
-    }
+.btn.ghost{
+  background:transparent;
+  border:1px solid var(--border);
+  color:#0f172a;
+}
 
-    svg .needle{
-      transform-origin:50% 88%;
-      transition:transform 1s ease-in-out;
-    }
+/* gauge */
 
-    .pct-text{
-      position:absolute;
-      left:50%;
-      top:44%;
-      transform:translate(-50%,-50%);
-      font-weight:600;
-      font-size:14px;
-      pointer-events:none;
-    }
+.gauge{
+  width:220px;
+  height:120px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+}
 
-    .fuel-controls{
-      display:flex;
-      gap:8px;
-      align-items:center;
-      margin-top:6px;
-    }
+svg .needle{
+  transform-origin:50% 88%;
+  transition:transform 1s ease-in-out;
+}
 
-    .fuel-controls input[type="range"]{
-      flex:1;
-    }
+.pct-text{
+  position:absolute;
+  left:50%;
+  top:44%;
+  transform:translate(-50%,-50%);
+  font-weight:600;
+  font-size:14px;
+}
 
-    .fuel-controls input[type="number"]{
-      width:70px;
-    }
+.fuel-controls{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  margin-top:6px;
+}
 
-    .gauge-legend{
-      font-size:12px;
-      color:var(--muted);
-      margin-top:4px;
-    }
+.fuel-controls input[type="range"]{
+  flex:1;
+}
 
-    .signature{
-      margin-top:12px;
-      font-size:14px;
-    }
+.fuel-controls input[type="number"]{
+  width:70px;
+}
 
-    /* login */
+.gauge-legend{
+  font-size:12px;
+  color:var(--muted);
+  margin-top:4px;
+}
 
-    #loginBox{
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      height:90vh;
-      text-align:center;
-    }
+.signature{
+  margin-top:12px;
+  font-size:14px;
+}
 
-    #loginBox input{
-      width:220px;
-      margin:6px 0;
-    }
+/* login */
 
-    #loginBox button{
-      margin-top:8px;
-    }
+#loginBox{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  height:90vh;
+  text-align:center;
+}
 
-    @media(max-width:760px){
+#loginBox input{
+  width:220px;
+  margin:6px 0;
+}
 
-      .field-row{
-        flex-direction:column;
-      }
+#loginBox button{
+  margin-top:8px;
+}
 
-      .gauge{
-        width:160px;
-        height:90px;
-      }
+.warning-image{
+  margin-top:10px;
+  text-align:center;
+}
 
-    }
+.warning-image img{
+  width:100%;
+  max-width:700px;
+  border-radius:8px;
+  border:1px solid #e5e7eb;
+}
 
-  </style>
+@media(max-width:760px){
+
+  .field-row{
+    flex-direction:column;
+  }
+
+  .gauge{
+    width:160px;
+    height:90px;
+  }
+
+}
+
+</style>
 </head>
 
 <body>
 
-  <!-- LOGIN -->
+<!-- LOGIN -->
 
-  <div id="loginBox">
+<div id="loginBox">
 
-    <h2>Acceso restringido</h2>
+  <h2>Acceso restringido</h2>
 
-    <p class="small">Ingrese usuario y contraseña</p>
+  <p class="small">
+    Ingrese usuario y contraseña
+  </p>
 
-    <input type="text" id="user" placeholder="Usuario">
+  <input type="text" id="user" placeholder="Usuario">
 
-    <input type="password" id="pass" placeholder="Contraseña">
+  <input type="password" id="pass" placeholder="Contraseña">
 
-    <button class="btn" id="loginBtn">Ingresar</button>
+  <button class="btn" id="loginBtn">
+    Ingresar
+  </button>
 
-    <p id="msg" class="small" style="color:#c53030;"></p>
+  <p id="msg" class="small" style="color:#c53030;"></p>
 
-  </div>
+</div>
 
-  <!-- CONTENIDO -->
+<!-- CONTENIDO -->
 
-  <div class="container" id="main">
+<div class="container" id="main">
 
-    <header>
+<header>
 
-      <div>
-        <h1>Planilla Control Diario Vehicular</h1>
-        <div class="small">
-          Completar y presionar "Agregar otro"
-        </div>
-      </div>
+  <div>
+    <h1>Planilla Control Diario Vehicular</h1>
 
-    </header>
-
-    <div class="toolbar">
-
-      <button class="btn secondary" id="addBtn">
-        Agregar otro
-      </button>
-
-      <button class="btn ghost" id="resetBtn">
-        Reset
-      </button>
-
-      <button class="btn" id="exportPdf">
-        Exportar PDF
-      </button>
-
-      <button class="btn" id="exportCsv">
-        Exportar CSV
-      </button>
-
+    <div class="small">
+      Completar y presionar "Agregar otro"
     </div>
-
-    <form id="forms" onsubmit="return false;">
-
-      <template id="tpl">
-
-        <section class="card record">
-
-          <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap;">
-
-            <!-- izquierda -->
-
-            <div style="flex:1;min-width:300px;">
-
-              <div class="field-row">
-
-                <div>
-                  <label>Fecha</label>
-                  <input type="date" name="fecha">
-                </div>
-
-                <div>
-                  <label>Patente</label>
-                  <input type="text" name="patente" placeholder="ABC123">
-                </div>
-
-              </div>
-
-              <div style="margin-top:8px">
-
-                <label class="small">Limpieza</label>
-
-                <div class="row" style="margin-top:6px">
-
-                  <label style="display:flex;align-items:center;gap:6px">
-                    <input type="radio" name="limpieza" value="Si">
-                    Sí
-                  </label>
-
-                  <label style="display:flex;align-items:center;gap:6px">
-                    <input type="radio" name="limpieza" value="No">
-                    No
-                  </label>
-
-                </div>
-
-              </div>
-
-              <div style="margin-top:8px;">
-
-                <div class="field-row">
-
-                  <div>
-                    <label>Aceite</label>
-                    <select name="aceite">
-                      <option>OK</option>
-                      <option>Revisar</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label>Agua</label>
-                    <select name="agua">
-                      <option>OK</option>
-                      <option>Revisar</option>
-                    </select>
-                  </div>
-
-                </div>
-
-              </div>
-
-              <div style="margin-top:8px" class="field-row">
-
-                <div>
-                  <label>Km recibido</label>
-                  <input type="number" name="km_recibido">
-                </div>
-
-                <div>
-                  <label>Km entrega</label>
-                  <input type="number" name="km_entrega">
-                </div>
-
-              </div>
-
-              <!-- NUEVO -->
-
-              <div style="margin-top:8px" class="field-row">
-
-                <div>
-                  <label>Lugar</label>
-                  <input type="text" name="lugar">
-                </div>
-
-                <div>
-                  <label>Sector</label>
-                  <input type="text" name="sector">
-                </div>
-
-              </div>
-
-              <div style="margin-top:8px" class="field-row">
-
-                <div>
-                  <label>Hora salida</label>
-                  <input type="time" name="hora_salida">
-                </div>
-
-                <div>
-                  <label>Hora llegada</label>
-                  <input type="time" name="hora_llegada">
-                </div>
-
-              </div>
-
-              <!-- FIN NUEVO -->
-
-              <div style="margin-top:8px">
-
-                <label>Novedades</label>
-
-                <textarea name="novedades"></textarea>
-
-              </div>
-
-              <div class="signature">
-                Firma Chofer: ________________________
-              </div>
-
-            </div>
-
-            <!-- derecha -->
-
-            <div style="width:240px;text-align:center">
-
-              <div class="gauge">
-
-                <svg viewBox="0 0 200 110" width="200" height="110" class="gauge-svg">
-
-                  <path d="M10,100 A90,90 0 0,1 190,100"
-                    fill="none"
-                    stroke="#e6edf5"
-                    stroke-width="18"
-                    stroke-linecap="round"/>
-
-                  <path d="M20,100 A80,80 0 0,1 180,100"
-                    fill="none"
-                    stroke="#dbe7fb"
-                    stroke-width="10"
-                    stroke-linecap="round"/>
-
-                  <g class="ticks"></g>
-
-                  <line
-                    class="needle"
-                    x1="100"
-                    y1="100"
-                    x2="100"
-                    y2="24"
-                    stroke="#c53030"
-                    stroke-width="3"
-                    stroke-linecap="round"
-                  />
-
-                  <circle cx="100" cy="100" r="5" fill="#0f172a" />
-
-                </svg>
-
-                <div class="pct-text">50%</div>
-
-              </div>
-
-              <div style="margin-top:6px;text-align:left;">
-
-                <label class="small">Nivel combustible</label>
-
-                <div class="fuel-controls">
-
-                  <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    value="50"
-                    class="fuel-range"
-                  >
-
-                  <input
-                    type="number"
-                    min="0"
-                    max="100"
-                    value="50"
-                    class="fuel-number"
-                  >
-
-                </div>
-
-                <div class="gauge-legend">
-                  <span>E</span>
-                  <span style="float:right">F</span>
-                </div>
-
-              </div>
-
-            </div>
-
-          </div>
-
-          <div style="display:flex;justify-content:flex-end;margin-top:8px;gap:8px">
-
-            <button type="button" class="btn ghost remove">
-              Eliminar
-            </button>
-
-          </div>
-
-        </section>
-
-      </template>
-
-      <div id="list"></div>
-
-    </form>
-
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</header>
 
-  <script>
+<div class="toolbar">
 
-    // LOGIN
+  <button class="btn secondary" id="addBtn">
+    Agregar otro
+  </button>
 
-    document.getElementById('loginBtn').addEventListener('click', function(){
+  <button class="btn ghost" id="resetBtn">
+    Reset
+  </button>
 
-      const user = document.getElementById('user').value.trim();
-      const pass = document.getElementById('pass').value.trim();
+  <button class="btn" id="exportPdf">
+    Exportar PDF
+  </button>
 
-      if(user === 'admin' && pass === '1234'){
+  <button class="btn" id="exportCsv">
+    Exportar CSV
+  </button>
 
-        document.getElementById('loginBox').style.display = 'none';
-        document.getElementById('main').style.display = 'block';
+</div>
 
-      }else{
+<form id="forms" onsubmit="return false;">
 
-        document.getElementById('msg').textContent = 'Credenciales incorrectas';
+<template id="tpl">
 
-      }
+<section class="card record">
 
-    });
+<div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap;">
 
-    // TICKS
+<!-- izquierda -->
 
-    function makeTicks(svg){
+<div style="flex:1;min-width:300px;">
 
-      const g = svg.querySelector('.ticks');
+<div class="field-row">
 
-      for(let i=0;i<=12;i++){
+  <div>
+    <label>Fecha</label>
+    <input type="date" name="fecha">
+  </div>
 
-        let a = -90 + (i/12)*180;
+  <div>
+    <label>Patente</label>
+    <input type="text" name="patente" placeholder="ABC123">
+  </div>
 
-        let rOut = 80;
-        let rIn = (i%3===0)?60:68;
+</div>
 
-        let x1 = 100 + rOut*Math.cos(a*Math.PI/180);
-        let y1 = 100 + rOut*Math.sin(a*Math.PI/180);
+<div style="margin-top:8px">
 
-        let x2 = 100 + rIn*Math.cos(a*Math.PI/180);
-        let y2 = 100 + rIn*Math.sin(a*Math.PI/180);
+<label class="small">Limpieza</label>
 
-        let line = document.createElementNS('http://www.w3.org/2000/svg','line');
+<div class="row" style="margin-top:6px">
 
-        line.setAttribute('x1',x1);
-        line.setAttribute('y1',y1);
-        line.setAttribute('x2',x2);
-        line.setAttribute('y2',y2);
+<label style="display:flex;align-items:center;gap:6px">
+<input type="radio" name="limpieza" value="Si">
+Sí
+</label>
 
-        line.setAttribute('stroke','#9aa7bf');
-        line.setAttribute('stroke-width','2');
+<label style="display:flex;align-items:center;gap:6px">
+<input type="radio" name="limpieza" value="No">
+No
+</label>
 
-        g.appendChild(line);
+</div>
 
-      }
+</div>
 
-    }
+<div style="margin-top:8px;">
 
-    function attachGauge(section){
+<div class="field-row">
 
-      let svg = section.querySelector('.gauge-svg');
+<div>
+<label>Aceite</label>
+<select name="aceite">
+<option>OK</option>
+<option>Revisar</option>
+</select>
+</div>
 
-      if(!svg.dataset.ready){
+<div>
+<label>Agua</label>
+<select name="agua">
+<option>OK</option>
+<option>Revisar</option>
+</select>
+</div>
 
-        makeTicks(svg);
-        svg.dataset.ready = '1';
+</div>
 
-      }
+</div>
 
-      let range = section.querySelector('.fuel-range');
-      let number = section.querySelector('.fuel-number');
-      let needle = section.querySelector('.needle');
-      let pctText = section.querySelector('.pct-text');
+<div style="margin-top:8px" class="field-row">
 
-      function setVal(v){
+<div>
+<label>Km recibido</label>
+<input type="number" name="km_recibido">
+</div>
 
-        v = Number(v);
+<div>
+<label>Km entrega</label>
+<input type="number" name="km_entrega">
+</div>
 
-        if(v < 0) v = 0;
-        if(v > 100) v = 100;
+</div>
 
-        let angle = -90 + (v/100)*180;
+<div style="margin-top:8px" class="field-row">
 
-        needle.style.transform = `rotate(${angle}deg)`;
+<div>
+<label>Lugar</label>
+<input type="text" name="lugar">
+</div>
 
-        pctText.textContent = v + '%';
+<div>
+<label>Sector</label>
+<input type="text" name="sector">
+</div>
 
-        range.value = v;
-        number.value = v;
+</div>
 
-      }
+<div style="margin-top:8px" class="field-row">
 
-      range.addEventListener('input', () => setVal(range.value));
+<div>
+<label>Hora salida</label>
+<input type="time" name="hora_salida">
+</div>
 
-      number.addEventListener('input', () => setVal(number.value));
+<div>
+<label>Hora llegada</label>
+<input type="time" name="hora_llegada">
+</div>
 
-      setVal(50);
+</div>
 
-    }
+<div style="margin-top:8px">
 
-    // REGISTROS
+<label>Novedades</label>
 
-    const tpl = document.getElementById('tpl');
-    const list = document.getElementById('list');
+<textarea name="novedades"></textarea>
 
-    let counter = 0;
+<!-- IMAGEN -->
 
-    function addRecord(){
+<div class="warning-image">
 
-      counter++;
+<img
+src="responsabilidad.jpg"
+alt="Responsabilidad del chofer">
 
-      let node = tpl.content.cloneNode(true);
+</div>
 
-      let sect = node.querySelector('.record');
+</div>
 
-      sect.querySelectorAll('[name]').forEach(el => {
+<div class="signature">
+Firma Chofer: ________________________
+</div>
 
-        let name = el.getAttribute('name');
+</div>
 
-        el.setAttribute('name', name + '_' + counter);
+<!-- derecha -->
 
-      });
+<div style="width:240px;text-align:center">
 
-      list.appendChild(node);
+<div class="gauge">
 
-      let last = list.lastElementChild;
+<svg viewBox="0 0 200 110" width="200" height="110" class="gauge-svg">
 
-      attachGauge(last);
+<path
+d="M10,100 A90,90 0 0,1 190,100"
+fill="none"
+stroke="#e6edf5"
+stroke-width="18"
+stroke-linecap="round"
+/>
 
-      last.querySelector('.remove').addEventListener('click', () => {
+<path
+d="M20,100 A80,80 0 0,1 180,100"
+fill="none"
+stroke="#dbe7fb"
+stroke-width="10"
+stroke-linecap="round"
+/>
 
-        last.remove();
+<g class="ticks"></g>
 
-      });
+<line
+class="needle"
+x1="100"
+y1="100"
+x2="100"
+y2="24"
+stroke="#c53030"
+stroke-width="3"
+stroke-linecap="round"
+/>
 
-    }
+<circle cx="100" cy="100" r="5" fill="#0f172a" />
 
-    addRecord();
+</svg>
 
-    document.getElementById('addBtn').addEventListener('click', addRecord);
+<div class="pct-text">50%</div>
 
-    document.getElementById('resetBtn').addEventListener('click', function(){
+</div>
 
-      list.innerHTML = '';
-      counter = 0;
-      addRecord();
+<div style="margin-top:6px;text-align:left;">
 
-    });
+<label class="small">
+Nivel combustible
+</label>
 
-    // PDF
+<div class="fuel-controls">
 
-    document.getElementById('exportPdf').addEventListener('click', function(){
+<input
+type="range"
+min="0"
+max="100"
+value="50"
+class="fuel-range"
+>
 
-      let opt = {
+<input
+type="number"
+min="0"
+max="100"
+value="50"
+class="fuel-number"
+>
 
-        margin:0.4,
-        filename:'planilla.pdf',
-        image:{type:'jpeg',quality:0.98},
-        html2canvas:{scale:2},
-        jsPDF:{unit:'in',format:'a4',orientation:'portrait'}
+</div>
 
-      };
+<div class="gauge-legend">
+<span>E</span>
+<span style="float:right">F</span>
+</div>
 
-      html2pdf().set(opt).from(document.querySelector('.container')).save();
+</div>
 
-    });
+</div>
 
-    // CSV
+</div>
 
-    document.getElementById('exportCsv').addEventListener('click', function(){
+<div style="display:flex;justify-content:flex-end;margin-top:8px;gap:8px">
 
-      let rows = [];
+<button type="button" class="btn ghost remove">
+Eliminar
+</button>
 
-      rows.push([
-        'fecha',
-        'patente',
-        'limpieza',
-        'aceite',
-        'agua',
-        'combustible',
-        'km_recibido',
-        'km_entrega',
-        'lugar',
-        'sector',
-        'hora_salida',
-        'hora_llegada',
-        'novedades'
-      ].join(','));
+</div>
 
-      document.querySelectorAll('.record').forEach(rec => {
+</section>
 
-        let get = (sel) => {
+</template>
 
-          let el = rec.querySelector(sel);
+<div id="list"></div>
 
-          return el ? el.value : '';
+</form>
 
-        };
+</div>
 
-        let limpieza = '';
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
-        let r = rec.querySelector('input[type="radio"]:checked');
+<script>
 
-        if(r) limpieza = r.value;
+/* LOGIN */
 
-        rows.push([
+document.getElementById('loginBtn').addEventListener('click', function(){
 
-          get('[name^="fecha_"]'),
-          get('[name^="patente_"]'),
-          limpieza,
-          get('[name^="aceite_"]'),
-          get('[name^="agua_"]'),
-          rec.querySelector('.fuel-number').value,
-          get('[name^="km_recibido_"]'),
-          get('[name^="km_entrega_"]'),
-          get('[name^="lugar_"]'),
-          get('[name^="sector_"]'),
-          get('[name^="hora_salida_"]'),
-          get('[name^="hora_llegada_"]'),
-          get('[name^="novedades_"]')
+const user = document.getElementById('user').value.trim();
+const pass = document.getElementById('pass').value.trim();
 
-        ].map(v => `"${String(v).replace(/"/g,'""')}"`).join(','));
+if(user === 'admin' && pass === '1234'){
 
-      });
+document.getElementById('loginBox').style.display = 'none';
+document.getElementById('main').style.display = 'block';
 
-      let csv = rows.join('\n');
+}else{
 
-      let blob = new Blob([csv], {
-        type:'text/csv;charset=utf-8;'
-      });
+document.getElementById('msg').textContent = 'Credenciales incorrectas';
 
-      let url = URL.createObjectURL(blob);
+}
 
-      let a = document.createElement('a');
+});
 
-      a.href = url;
-      a.download = 'planilla.csv';
+/* TICKS */
 
-      document.body.appendChild(a);
+function makeTicks(svg){
 
-      a.click();
+const g = svg.querySelector('.ticks');
 
-      a.remove();
+for(let i=0;i<=12;i++){
 
-      URL.revokeObjectURL(url);
+let a = -90 + (i/12)*180;
 
-    });
+let rOut = 80;
+let rIn = (i%3===0)?60:68;
 
-  </script>
+let x1 = 100 + rOut*Math.cos(a*Math.PI/180);
+let y1 = 100 + rOut*Math.sin(a*Math.PI/180);
+
+let x2 = 100 + rIn*Math.cos(a*Math.PI/180);
+let y2 = 100 + rIn*Math.sin(a*Math.PI/180);
+
+let line = document.createElementNS('http://www.w3.org/2000/svg','line');
+
+line.setAttribute('x1',x1);
+line.setAttribute('y1',y1);
+line.setAttribute('x2',x2);
+line.setAttribute('y2',y2);
+
+line.setAttribute('stroke','#9aa7bf');
+line.setAttribute('stroke-width','2');
+
+g.appendChild(line);
+
+}
+
+}
+
+function attachGauge(section){
+
+let svg = section.querySelector('.gauge-svg');
+
+if(!svg.dataset.ready){
+
+makeTicks(svg);
+svg.dataset.ready = '1';
+
+}
+
+let range = section.querySelector('.fuel-range');
+let number = section.querySelector('.fuel-number');
+let needle = section.querySelector('.needle');
+let pctText = section.querySelector('.pct-text');
+
+function setVal(v){
+
+v = Number(v);
+
+if(v < 0) v = 0;
+if(v > 100) v = 100;
+
+let angle = -90 + (v/100)*180;
+
+needle.style.transform = `rotate(${angle}deg)`;
+
+pctText.textContent = v + '%';
+
+range.value = v;
+number.value = v;
+
+}
+
+range.addEventListener('input', () => setVal(range.value));
+
+number.addEventListener('input', () => setVal(number.value));
+
+setVal(50);
+
+}
+
+/* REGISTROS */
+
+const tpl = document.getElementById('tpl');
+const list = document.getElementById('list');
+
+let counter = 0;
+
+function addRecord(){
+
+counter++;
+
+let node = tpl.content.cloneNode(true);
+
+let sect = node.querySelector('.record');
+
+sect.querySelectorAll('[name]').forEach(el => {
+
+let name = el.getAttribute('name');
+
+el.setAttribute('name', name + '_' + counter);
+
+});
+
+list.appendChild(node);
+
+let last = list.lastElementChild;
+
+attachGauge(last);
+
+last.querySelector('.remove').addEventListener('click', () => {
+
+last.remove();
+
+});
+
+}
+
+addRecord();
+
+document.getElementById('addBtn').addEventListener('click', addRecord);
+
+document.getElementById('resetBtn').addEventListener('click', function(){
+
+list.innerHTML = '';
+counter = 0;
+addRecord();
+
+});
+
+/* PDF */
+
+document.getElementById('exportPdf').addEventListener('click', function(){
+
+let opt = {
+
+margin:0.4,
+filename:'planilla.pdf',
+image:{type:'jpeg',quality:0.98},
+html2canvas:{scale:2},
+jsPDF:{unit:'in',format:'a4',orientation:'portrait'}
+
+};
+
+html2pdf().set(opt).from(document.querySelector('.container')).save();
+
+});
+
+/* CSV */
+
+document.getElementById('exportCsv').addEventListener('click', function(){
+
+let rows = [];
+
+rows.push([
+'fecha',
+'patente',
+'limpieza',
+'aceite',
+'agua',
+'combustible',
+'km_recibido',
+'km_entrega',
+'lugar',
+'sector',
+'hora_salida',
+'hora_llegada',
+'novedades'
+].join(','));
+
+document.querySelectorAll('.record').forEach(rec => {
+
+let get = (sel) => {
+
+let el = rec.querySelector(sel);
+
+return el ? el.value : '';
+
+};
+
+let limpieza = '';
+
+let r = rec.querySelector('input[type="radio"]:checked');
+
+if(r) limpieza = r.value;
+
+rows.push([
+
+get('[name^="fecha_"]'),
+get('[name^="patente_"]'),
+limpieza,
+get('[name^="aceite_"]'),
+get('[name^="agua_"]'),
+rec.querySelector('.fuel-number').value,
+get('[name^="km_recibido_"]'),
+get('[name^="km_entrega_"]'),
+get('[name^="lugar_"]'),
+get('[name^="sector_"]'),
+get('[name^="hora_salida_"]'),
+get('[name^="hora_llegada_"]'),
+get('[name^="novedades_"]')
+
+].map(v => `"${String(v).replace(/"/g,'""')}"`).join(','));
+
+});
+
+let csv = rows.join('\n');
+
+let blob = new Blob([csv], {
+type:'text/csv;charset=utf-8;'
+});
+
+let url = URL.createObjectURL(blob);
+
+let a = document.createElement('a');
+
+a.href = url;
+a.download = 'planilla.csv';
+
+document.body.appendChild(a);
+
+a.click();
+
+a.remove();
+
+URL.revokeObjectURL(url);
+
+});
+
+</script>
 
 </body>
 </html>
