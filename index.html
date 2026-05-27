@@ -1,13 +1,11 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Planilla Control Diario Vehicular</title>
 
 <style>
-
 :root{
   --bg:#ffffff;
   --muted:#6b7280;
@@ -17,7 +15,7 @@
 }
 
 body{
-  font-family:Inter,system-ui,sans-serif;
+  font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,Arial;
   background:var(--bg);
   color:#0f172a;
   margin:18px;
@@ -37,7 +35,7 @@ header{
 }
 
 h1{
-  font-size:18px;
+  font-size:20px;
   margin:0;
 }
 
@@ -52,7 +50,6 @@ h1{
   border-radius:8px;
   padding:12px;
   margin-bottom:14px;
-  box-shadow:0 1px 0 rgba(15,23,42,0.02);
 }
 
 label{
@@ -77,11 +74,6 @@ textarea{
   min-height:70px;
 }
 
-.row{
-  display:flex;
-  gap:8px;
-}
-
 .field-row{
   display:flex;
   gap:8px;
@@ -91,12 +83,16 @@ textarea{
   flex:1;
 }
 
+.row{
+  display:flex;
+  gap:8px;
+}
+
 .toolbar{
   display:flex;
   gap:8px;
   justify-content:flex-end;
   margin-bottom:10px;
-  flex-wrap:wrap;
 }
 
 .btn{
@@ -119,29 +115,34 @@ textarea{
   color:#0f172a;
 }
 
-/* gauge */
+/* Gauge */
 
 .gauge{
   width:220px;
   height:120px;
+  position:relative;
   display:flex;
   align-items:center;
   justify-content:center;
-  position:relative;
 }
 
 svg .needle{
   transform-origin:50% 88%;
-  transition:transform 1s ease-in-out;
+  transition:transform 1.2s cubic-bezier(.22,.61,.36,1);
 }
 
 .pct-text{
   position:absolute;
   left:50%;
-  top:44%;
+  top:46%;
   transform:translate(-50%,-50%);
-  font-weight:600;
-  font-size:14px;
+  font-weight:700;
+  font-size:16px;
+}
+
+.gauge-legend{
+  font-size:12px;
+  color:var(--muted);
 }
 
 .fuel-controls{
@@ -159,14 +160,8 @@ svg .needle{
   width:70px;
 }
 
-.gauge-legend{
-  font-size:12px;
-  color:var(--muted);
-  margin-top:4px;
-}
-
 .signature{
-  margin-top:12px;
+  margin-top:14px;
   font-size:14px;
 }
 
@@ -178,7 +173,6 @@ svg .needle{
   align-items:center;
   justify-content:center;
   height:90vh;
-  text-align:center;
 }
 
 #loginBox input{
@@ -190,31 +184,18 @@ svg .needle{
   margin-top:8px;
 }
 
-.warning-image{
-  margin-top:10px;
-  text-align:center;
-}
-
-.warning-image img{
-  width:100%;
-  max-width:700px;
-  border-radius:8px;
-  border:1px solid #e5e7eb;
-}
+/* responsive */
 
 @media(max-width:760px){
-
   .field-row{
     flex-direction:column;
   }
 
   .gauge{
-    width:160px;
-    height:90px;
+    width:180px;
+    height:100px;
   }
-
 }
-
 </style>
 </head>
 
@@ -223,23 +204,14 @@ svg .needle{
 <!-- LOGIN -->
 
 <div id="loginBox">
-
   <h2>Acceso restringido</h2>
 
-  <p class="small">
-    Ingrese usuario y contraseña
-  </p>
-
   <input type="text" id="user" placeholder="Usuario">
-
   <input type="password" id="pass" placeholder="Contraseña">
 
-  <button class="btn" id="loginBtn">
-    Ingresar
-  </button>
+  <button class="btn" id="loginBtn">Ingresar</button>
 
-  <p id="msg" class="small" style="color:#c53030;"></p>
-
+  <p id="msg" style="color:red"></p>
 </div>
 
 <!-- CONTENIDO -->
@@ -247,84 +219,55 @@ svg .needle{
 <div class="container" id="main">
 
 <header>
-
   <div>
     <h1>Planilla Control Diario Vehicular</h1>
-
     <div class="small">
-      Completar y presionar "Agregar otro"
+      Completar y exportar PDF o CSV
     </div>
   </div>
-
 </header>
 
 <div class="toolbar">
-
-  <button class="btn secondary" id="addBtn">
-    Agregar otro
-  </button>
-
-  <button class="btn ghost" id="resetBtn">
-    Reset
-  </button>
-
-  <button class="btn" id="exportPdf">
-    Exportar PDF
-  </button>
-
-  <button class="btn" id="exportCsv">
-    Exportar CSV
-  </button>
-
+  <button class="btn secondary" id="addBtn">Agregar otro</button>
+  <button class="btn ghost" id="resetBtn">Reset</button>
+  <button class="btn" id="exportPdf">Exportar PDF</button>
+  <button class="btn" id="exportCsv">Exportar CSV</button>
 </div>
 
-<form id="forms" onsubmit="return false;">
+<form id="forms">
 
 <template id="tpl">
 
 <section class="card record">
 
-<div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap;">
-
-<!-- izquierda -->
+<div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap">
 
 <div style="flex:1;min-width:300px;">
 
 <div class="field-row">
 
-  <div>
-    <label>Fecha</label>
-    <input type="date" name="fecha">
-  </div>
+<div>
+<label>Fecha</label>
+<input type="date" name="fecha">
+</div>
 
-  <div>
-    <label>Patente</label>
-    <input type="text" name="patente" placeholder="ABC123">
-  </div>
+<div>
+<label>Patente</label>
+<input type="text" name="patente" placeholder="ABC123">
+</div>
 
 </div>
 
 <div style="margin-top:8px">
-
 <label class="small">Limpieza</label>
 
 <div class="row" style="margin-top:6px">
-
-<label style="display:flex;align-items:center;gap:6px">
-<input type="radio" name="limpieza" value="Si">
-Sí
-</label>
-
-<label style="display:flex;align-items:center;gap:6px">
-<input type="radio" name="limpieza" value="No">
-No
-</label>
-
+<label><input type="radio" name="limpieza" value="Sí"> Sí</label>
+<label><input type="radio" name="limpieza" value="No"> No</label>
+</div>
 </div>
 
-</div>
-
-<div style="margin-top:8px;">
+<div style="margin-top:8px">
 
 <div class="field-row">
 
@@ -362,6 +305,8 @@ No
 
 </div>
 
+<!-- NUEVOS CAMPOS -->
+
 <div style="margin-top:8px" class="field-row">
 
 <div>
@@ -391,21 +336,23 @@ No
 </div>
 
 <div style="margin-top:8px">
-
 <label>Novedades</label>
-
 <textarea name="novedades"></textarea>
+</div>
 
 <!-- IMAGEN -->
 
-<div class="warning-image">
-
-<img
-src="responsabilidad.jpg"
-alt="Responsabilidad del chofer">
-
-</div>
-
+<div style="margin-top:10px;text-align:center;">
+  <img 
+    src="responsabilidad.png"
+    style="
+      width:100%;
+      max-width:420px;
+      height:auto;
+      opacity:0.92;
+      border-radius:8px;
+    "
+  >
 </div>
 
 <div class="signature">
@@ -414,29 +361,25 @@ Firma Chofer: ________________________
 
 </div>
 
-<!-- derecha -->
+<!-- GAUGE -->
 
 <div style="width:240px;text-align:center">
 
 <div class="gauge">
 
-<svg viewBox="0 0 200 110" width="200" height="110" class="gauge-svg">
+<svg viewBox="0 0 200 110" width="200" height="110">
 
-<path
-d="M10,100 A90,90 0 0,1 190,100"
+<path d="M10,100 A90,90 0 0,1 190,100"
 fill="none"
 stroke="#e6edf5"
 stroke-width="18"
-stroke-linecap="round"
-/>
+stroke-linecap="round"/>
 
-<path
-d="M20,100 A80,80 0 0,1 180,100"
+<path d="M20,100 A80,80 0 0,1 180,100"
 fill="none"
 stroke="#dbe7fb"
 stroke-width="10"
-stroke-linecap="round"
-/>
+stroke-linecap="round"/>
 
 <g class="ticks"></g>
 
@@ -451,7 +394,7 @@ stroke-width="3"
 stroke-linecap="round"
 />
 
-<circle cx="100" cy="100" r="5" fill="#0f172a" />
+<circle cx="100" cy="100" r="5" fill="#111"/>
 
 </svg>
 
@@ -459,29 +402,23 @@ stroke-linecap="round"
 
 </div>
 
-<div style="margin-top:6px;text-align:left;">
+<div style="margin-top:6px;text-align:left">
 
-<label class="small">
-Nivel combustible
-</label>
+<label class="small">Nivel combustible</label>
 
 <div class="fuel-controls">
 
-<input
-type="range"
+<input type="range"
 min="0"
 max="100"
 value="50"
-class="fuel-range"
->
+class="fuel-range">
 
-<input
-type="number"
+<input type="number"
 min="0"
 max="100"
 value="50"
-class="fuel-number"
->
+class="fuel-number">
 
 </div>
 
@@ -496,12 +433,8 @@ class="fuel-number"
 
 </div>
 
-<div style="display:flex;justify-content:flex-end;margin-top:8px;gap:8px">
-
-<button type="button" class="btn ghost remove">
-Eliminar
-</button>
-
+<div style="display:flex;justify-content:flex-end;margin-top:8px">
+<button type="button" class="btn ghost remove">Eliminar</button>
 </div>
 
 </section>
@@ -511,7 +444,6 @@ Eliminar
 <div id="list"></div>
 
 </form>
-
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -520,20 +452,16 @@ Eliminar
 
 /* LOGIN */
 
-document.getElementById('loginBtn').addEventListener('click', function(){
+document.getElementById('loginBtn').addEventListener('click',function(){
 
-const user = document.getElementById('user').value.trim();
-const pass = document.getElementById('pass').value.trim();
+const user=document.getElementById('user').value;
+const pass=document.getElementById('pass').value;
 
-if(user === 'admin' && pass === '1234'){
-
-document.getElementById('loginBox').style.display = 'none';
-document.getElementById('main').style.display = 'block';
-
+if(user==="admin" && pass==="1234"){
+document.getElementById('loginBox').style.display='none';
+document.getElementById('main').style.display='block';
 }else{
-
-document.getElementById('msg').textContent = 'Credenciales incorrectas';
-
+document.getElementById('msg').innerText='Credenciales incorrectas';
 }
 
 });
@@ -542,22 +470,22 @@ document.getElementById('msg').textContent = 'Credenciales incorrectas';
 
 function makeTicks(svg){
 
-const g = svg.querySelector('.ticks');
+const g=svg.querySelector('.ticks');
 
 for(let i=0;i<=12;i++){
 
-let a = -90 + (i/12)*180;
+let a=-90+(i/12)*180;
 
-let rOut = 80;
-let rIn = (i%3===0)?60:68;
+let rOut=80;
+let rIn=(i%3===0)?60:68;
 
-let x1 = 100 + rOut*Math.cos(a*Math.PI/180);
-let y1 = 100 + rOut*Math.sin(a*Math.PI/180);
+let x1=100+rOut*Math.cos(a*Math.PI/180);
+let y1=100+rOut*Math.sin(a*Math.PI/180);
 
-let x2 = 100 + rIn*Math.cos(a*Math.PI/180);
-let y2 = 100 + rIn*Math.sin(a*Math.PI/180);
+let x2=100+rIn*Math.cos(a*Math.PI/180);
+let y2=100+rIn*Math.sin(a*Math.PI/180);
 
-let line = document.createElementNS('http://www.w3.org/2000/svg','line');
+const line=document.createElementNS("http://www.w3.org/2000/svg","line");
 
 line.setAttribute('x1',x1);
 line.setAttribute('y1',y1);
@@ -573,193 +501,131 @@ g.appendChild(line);
 
 }
 
+/* GAUGE */
+
 function attachGauge(section){
 
-let svg = section.querySelector('.gauge-svg');
+const svg=section.querySelector('svg');
 
 if(!svg.dataset.ready){
-
 makeTicks(svg);
-svg.dataset.ready = '1';
-
+svg.dataset.ready='1';
 }
 
-let range = section.querySelector('.fuel-range');
-let number = section.querySelector('.fuel-number');
-let needle = section.querySelector('.needle');
-let pctText = section.querySelector('.pct-text');
+const range=section.querySelector('.fuel-range');
+const number=section.querySelector('.fuel-number');
+const needle=section.querySelector('.needle');
+const pct=section.querySelector('.pct-text');
 
 function setVal(v){
 
-v = Number(v);
+v=parseInt(v);
 
-if(v < 0) v = 0;
-if(v > 100) v = 100;
+if(isNaN(v))v=0;
 
-let angle = -90 + (v/100)*180;
+if(v<0)v=0;
+if(v>100)v=100;
 
-needle.style.transform = `rotate(${angle}deg)`;
+const angle=-90+(v/100)*180;
 
-pctText.textContent = v + '%';
+needle.style.transform=`rotate(${angle}deg)`;
 
-range.value = v;
-number.value = v;
+pct.innerText=v+'%';
+
+range.value=v;
+number.value=v;
 
 }
 
-range.addEventListener('input', () => setVal(range.value));
+range.addEventListener('input',()=>setVal(range.value));
 
-number.addEventListener('input', () => setVal(number.value));
+number.addEventListener('input',()=>setVal(number.value));
 
 setVal(50);
 
 }
 
-/* REGISTROS */
+/* RECORDS */
 
-const tpl = document.getElementById('tpl');
-const list = document.getElementById('list');
+const tpl=document.getElementById('tpl');
+const list=document.getElementById('list');
 
-let counter = 0;
+let counter=0;
 
 function addRecord(){
 
 counter++;
 
-let node = tpl.content.cloneNode(true);
-
-let sect = node.querySelector('.record');
-
-sect.querySelectorAll('[name]').forEach(el => {
-
-let name = el.getAttribute('name');
-
-el.setAttribute('name', name + '_' + counter);
-
-});
+const node=tpl.content.cloneNode(true);
 
 list.appendChild(node);
 
-let last = list.lastElementChild;
+const last=list.lastElementChild;
 
 attachGauge(last);
 
-last.querySelector('.remove').addEventListener('click', () => {
-
+last.querySelector('.remove').addEventListener('click',()=>{
 last.remove();
-
 });
 
 }
 
+document.getElementById('addBtn').addEventListener('click',addRecord);
+
 addRecord();
 
-document.getElementById('addBtn').addEventListener('click', addRecord);
+/* RESET */
 
-document.getElementById('resetBtn').addEventListener('click', function(){
+document.getElementById('resetBtn').addEventListener('click',()=>{
 
-list.innerHTML = '';
-counter = 0;
+list.innerHTML='';
 addRecord();
 
 });
 
 /* PDF */
 
-document.getElementById('exportPdf').addEventListener('click', function(){
+document.getElementById('exportPdf').addEventListener('click',()=>{
 
-let opt = {
-
-margin:0.4,
+const opt={
+margin:0.3,
 filename:'planilla.pdf',
 image:{type:'jpeg',quality:0.98},
 html2canvas:{scale:2},
 jsPDF:{unit:'in',format:'a4',orientation:'portrait'}
-
 };
 
-html2pdf().set(opt).from(document.querySelector('.container')).save();
+html2pdf().set(opt).from(document.getElementById('main')).save();
 
 });
 
 /* CSV */
 
-document.getElementById('exportCsv').addEventListener('click', function(){
+document.getElementById('exportCsv').addEventListener('click',()=>{
 
-let rows = [];
+let csv='';
 
-rows.push([
-'fecha',
-'patente',
-'limpieza',
-'aceite',
-'agua',
-'combustible',
-'km_recibido',
-'km_entrega',
-'lugar',
-'sector',
-'hora_salida',
-'hora_llegada',
-'novedades'
-].join(','));
+document.querySelectorAll('.record').forEach(rec=>{
 
-document.querySelectorAll('.record').forEach(rec => {
+const vals=[];
 
-let get = (sel) => {
+rec.querySelectorAll('input, textarea, select').forEach(el=>{
+vals.push('"' + el.value + '"');
+});
 
-let el = rec.querySelector(sel);
-
-return el ? el.value : '';
-
-};
-
-let limpieza = '';
-
-let r = rec.querySelector('input[type="radio"]:checked');
-
-if(r) limpieza = r.value;
-
-rows.push([
-
-get('[name^="fecha_"]'),
-get('[name^="patente_"]'),
-limpieza,
-get('[name^="aceite_"]'),
-get('[name^="agua_"]'),
-rec.querySelector('.fuel-number').value,
-get('[name^="km_recibido_"]'),
-get('[name^="km_entrega_"]'),
-get('[name^="lugar_"]'),
-get('[name^="sector_"]'),
-get('[name^="hora_salida_"]'),
-get('[name^="hora_llegada_"]'),
-get('[name^="novedades_"]')
-
-].map(v => `"${String(v).replace(/"/g,'""')}"`).join(','));
+csv+=vals.join(',')+'\n';
 
 });
 
-let csv = rows.join('\n');
+const blob=new Blob([csv],{type:'text/csv'});
 
-let blob = new Blob([csv], {
-type:'text/csv;charset=utf-8;'
-});
+const a=document.createElement('a');
 
-let url = URL.createObjectURL(blob);
+a.href=URL.createObjectURL(blob);
 
-let a = document.createElement('a');
-
-a.href = url;
-a.download = 'planilla.csv';
-
-document.body.appendChild(a);
+a.download='planilla.csv';
 
 a.click();
-
-a.remove();
-
-URL.revokeObjectURL(url);
 
 });
 
